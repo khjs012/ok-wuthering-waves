@@ -10,7 +10,14 @@ version = "dev"
 
 
 def calculate_pc_exe_path(running_path):
-    game_exe_folder = Path(running_path).parents[3]
+    # 优化路径计算逻辑，增强兼容性
+    path = Path(running_path)
+    if path.name == "Client-Win64-Shipping.exe":
+        game_exe = path.parents[3] / "Wuthering Waves.exe"
+        if game_exe.exists():
+            return str(game_exe)
+    
+    game_exe_folder = path.parents[3]
     return str(game_exe_folder / "Wuthering Waves.exe")
 
 
@@ -75,13 +82,26 @@ monthly_card_config_option = ConfigOption('Monthly Card Config', {
     'Monthly Card Time': 'Your computer\'s local time when the monthly card will popup, hour in (1-24)'
 })
 
+# 新增：全局定时任务配置
+schedule_config_option = ConfigOption('Schedule Config', {
+    'Enabled': False,
+    'Scheduled Time (HH:MM)': '04:00',
+    'Task to Run': 'Daily Task',
+    'Auto Start Game': True
+}, description='Global Schedule Configuration', config_description={
+    'Enabled': 'Enable global schedule monitoring on startup',
+    'Scheduled Time (HH:MM)': 'Time to trigger the task (24h format, e.g., 04:00)',
+    'Task to Run': 'Which task to run at scheduled time',
+    'Auto Start Game': 'Automatically start and login game if not running'
+})
+
 config = {
     'debug': False,  # Optional, default: False
     'use_gui': True,
     'config_folder': 'configs',
     'screenshot_processor': make_bottom_right_black,
     'gui_icon': 'icon.png',
-    'global_configs': [key_config_option, char_config_option, pick_echo_config_option, monthly_card_config_option],
+    'global_configs': [key_config_option, char_config_option, pick_echo_config_option, monthly_card_config_option, schedule_config_option],
     'ocr': {
         'lib': 'onnxocr',
         'params': {
@@ -175,6 +195,7 @@ config = {
         ["src.task.ChangeEchoTask", "ChangeEchoTask"],
         ["src.task.DiagnosisTask", "DiagnosisTask"],
     ], 'trigger_tasks': [
+        ["src.task.ScheduleTask", "ScheduleTask"],
         ["src.task.AutoCombatTask", "AutoCombatTask"],
         ["src.task.AutoPickTask", "AutoPickTask"],
         ["src.task.SkipDialogTask", "AutoDialogTask"],
