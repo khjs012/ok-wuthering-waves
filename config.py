@@ -1,4 +1,5 @@
 import os
+import time
 from pathlib import Path
 
 import numpy as np
@@ -8,9 +9,33 @@ from src.task.process_feature import process_feature
 
 version = "dev"
 
+# 全局启动冷却标记文件
+LAUNCH_THROTTLE_FILE = os.path.join(os.getcwd(), "launch_throttle.tmp")
 
 def calculate_pc_exe_path(running_path):
-    # 优化路径计算逻辑，增强兼容性
+    """
+    计算游戏可执行文件路径，并增加系统级启动频率限制，彻底杜绝多开。
+    """
+    # 1. 频率限制逻辑
+    if os.path.exists(LAUNCH_THROTTLE_FILE):
+        try:
+            with open(LAUNCH_THROTTLE_FILE, "r") as f:
+                last_launch_time = float(f.read().strip())
+            # 如果距离上次返回路径不足 60 秒，则返回空字符串，阻止框架启动
+            if time.time() - last_launch_time < 60:
+                print(f"[DEBUG] 启动频率过高，已拦截重复启动请求。上次启动时间: {last_launch_time}")
+                return ""
+        except:
+            pass
+
+    # 2. 记录本次启动时间
+    try:
+        with open(LAUNCH_THROTTLE_FILE, "w") as f:
+            f.write(str(time.time()))
+    except:
+        pass
+
+    # 3. 路径计算逻辑
     path = Path(running_path)
     if path.name == "Client-Win64-Shipping.exe":
         game_exe = path.parents[3] / "Wuthering Waves.exe"
@@ -82,7 +107,7 @@ monthly_card_config_option = ConfigOption('Monthly Card Config', {
     'Monthly Card Time': 'Your computer\'s local time when the monthly card will popup, hour in (1-24)'
 })
 
-# 新增：全局定时任务配置
+# 全局定时任务配置
 schedule_config_option = ConfigOption('Schedule Config', {
     'Enabled': False,
     'Scheduled Time (HH:MM)': '04:00',
