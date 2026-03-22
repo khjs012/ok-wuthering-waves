@@ -1,0 +1,65 @@
+name: Build Fork EXE Artifact
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build fork artifact
+    runs-on: windows-latest
+
+    env:
+      PYTHONIOENCODING: UTF-8
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          lfs: true
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Rewrite pyappify git_url for current fork
+        shell: pwsh
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          import re
+
+          workflow_repo_url = f"https://github.com/{os.environ['GITHUB_REPOSITORY']}.git"
+          pyappify = Path("pyappify.yml")
+          text = pyappify.read_text(encoding="utf-8")
+          text = re.sub(r'git_url:\s*".*?"', f'git_url: "{workflow_repo_url}"', text)
+          pyappify.write_text(text, encoding="utf-8")
+          print(f"Updated pyappify.yml git_url -> {workflow_repo_url}")
+          PY
+
+      - name: Run scheduler helper tests
+        shell: pwsh
+        run: |
+          python -m unittest tests/TestLazyDailyTask.py
+
+      - name: Build artifacts with pyappify
+        id: build-exe
+        uses: ok-oldking/pyappify-action@master
+        with:
+          build_exe_only: false
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ok-ww-fork-build
+          path: pyappify_dist/*
+          if-no-files-found: error

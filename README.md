@@ -99,6 +99,18 @@ python main.py
 python main_debug.py
 ```
 
+### 为你自己的 Fork 构建 EXE
+
+如果你 fork 了这个仓库，想在自己的 GitHub 仓库里直接打包 EXE，可以使用仓库内置的 **GitHub Actions** 工作流：
+
+1. 将代码推送到你自己的 GitHub 仓库。
+2. 打开 **Actions** 页面。
+3. 手动运行 **`Build Fork EXE Artifact`** 工作流。
+4. 工作流会自动把 `pyappify.yml` 里的 `git_url` 临时改成你当前的 fork 仓库地址，再构建 `pyappify_dist/*`。
+5. 构建完成后，到该次工作流的 **Artifacts** 下载打包结果。
+
+> 这个工作流不会发布 Release，也不依赖官方签名或同步私有仓库的 secrets，更适合 fork 仓库自己测试。
+
 ### 命令行参数
 
 您可以通过命令行参数实现自动化启动。
@@ -110,6 +122,21 @@ ok-ww.exe -t 1 -e
 
 *   `-t` 或 `--task`: 启动后自动执行第 N 个任务。`1` 代表任务列表中的第一个。
 *   `-e` 或 `--exit`: 任务执行完毕后自动退出程序。
+
+### 懒人版：每日定时自启动
+
+如果你希望软件每天自动启动、执行配置好的任务，并在完成后自动关闭，可以使用内置任务 **`Lazy Daily Auto Start`**：
+
+1. 在任务列表中找到 **`Lazy Daily Auto Start`**。
+2. 配置以下选项：
+   * `Enable Daily Auto Start`: 是否启用每日计划任务。
+   * `Daily Start Time`: 每天启动时间，使用 `HH:MM` 24 小时制，例如 `06:00`。
+   * `Task to Run`: 每天要自动执行的任务，例如 `Daily Task`。
+   * `Exit After Task`: 任务执行完后自动关闭程序。
+3. 手动运行一次这个任务后，程序会在 **Windows 计划任务** 中创建或更新一个每日任务。
+4. 如果想关闭每日自启动，把 `Enable Daily Auto Start` 改为关闭后再运行一次该任务即可删除计划任务。
+
+> 说明：该功能依赖 Windows 计划任务，仅支持 Windows 环境。
 
 ## 💬 加入我们
 

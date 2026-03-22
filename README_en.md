@@ -92,6 +92,18 @@ python main.py
 python main_debug.py
 ```
 
+### Build an EXE for Your Own Fork
+
+If you fork this repository and want to build an EXE in your own GitHub repo, you can use the built-in **GitHub Actions** workflow:
+
+1. Push the code to your own GitHub repository.
+2. Open the **Actions** tab.
+3. Manually run the **`Build Fork EXE Artifact`** workflow.
+4. The workflow temporarily rewrites `pyappify.yml` so `git_url` points to your current fork, then builds everything in `pyappify_dist/*`.
+5. After the workflow finishes, download the packaged result from that run's **Artifacts** section.
+
+> This workflow does not publish a Release and does not require the upstream signing or private sync secrets, so it is better suited for fork-based testing.
+
 ### Command-Line Arguments
 
 You can use command-line arguments for automated startup.
@@ -103,6 +115,21 @@ ok-ww.exe -t 1 -e
 
 *   `-t` or `--task`: Automatically runs the Nth task in the list after launch. `1` represents the first task.
 *   `-e` or `--exit`: Automatically exits the program after the task is completed.
+
+### Lazy Mode: Daily Auto Start
+
+If you want the app to start every day automatically, run one configured task, and close itself when finished, use the built-in **`Lazy Daily Auto Start`** task:
+
+1. Find **`Lazy Daily Auto Start`** in the task list.
+2. Configure these options:
+   * `Enable Daily Auto Start`: Turns the daily Windows scheduled task on or off.
+   * `Daily Start Time`: Daily launch time in `HH:MM` 24-hour format, for example `06:00`.
+   * `Task to Run`: The task to launch automatically each day, such as `Daily Task`.
+   * `Exit After Task`: Closes ok-ww automatically after the task is done.
+3. Run this task once manually and the app will create or update a **Windows Task Scheduler** entry.
+4. To disable daily auto start, turn `Enable Daily Auto Start` off and run the task once again to remove the scheduled task.
+
+> Note: this feature depends on Windows Task Scheduler and only works on Windows.
 
 ## 💬 Join Us
 
