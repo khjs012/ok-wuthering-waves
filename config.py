@@ -179,6 +179,7 @@ config = {
         ["src.task.EnhanceEchoTask", "EnhanceEchoTask"],
         ["src.task.ChangeEchoTask", "ChangeEchoTask"],
         ["src.task.DiagnosisTask", "DiagnosisTask"],
+        ["src.task.LazyDailyTask", "LazyDailyTask"],
     ], 'trigger_tasks': [
         ["src.task.AutoCombatTask", "AutoCombatTask"],
         ["src.task.AutoPickTask", "AutoPickTask"],
