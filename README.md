@@ -99,6 +99,18 @@ python main.py
 python main_debug.py
 ```
 
+### 为你自己的 Fork 构建 EXE
+
+如果你 fork 了这个仓库，想在自己的 GitHub 仓库里直接打包 EXE，可以使用仓库内置的 **GitHub Actions** 工作流：
+
+1. 将代码推送到你自己的 GitHub 仓库。
+2. 打开 **Actions** 页面。
+3. 手动运行 **`Build Fork EXE Artifact`** 工作流。
+4. 工作流会自动把 `pyappify.yml` 里的 `git_url` 临时改成你当前的 fork 仓库地址，再构建 `pyappify_dist/*`。
+5. 构建完成后，到该次工作流的 **Artifacts** 下载打包结果。
+
+> 这个工作流不会发布 Release，也不依赖官方签名或同步私有仓库的 secrets，更适合 fork 仓库自己测试。
+
 ### 命令行参数
 
 您可以通过命令行参数实现自动化启动。

@@ -92,6 +92,18 @@ python main.py
 python main_debug.py
 ```
 
+### Build an EXE for Your Own Fork
+
+If you fork this repository and want to build an EXE in your own GitHub repo, you can use the built-in **GitHub Actions** workflow:
+
+1. Push the code to your own GitHub repository.
+2. Open the **Actions** tab.
+3. Manually run the **`Build Fork EXE Artifact`** workflow.
+4. The workflow temporarily rewrites `pyappify.yml` so `git_url` points to your current fork, then builds everything in `pyappify_dist/*`.
+5. After the workflow finishes, download the packaged result from that run's **Artifacts** section.
+
+> This workflow does not publish a Release and does not require the upstream signing or private sync secrets, so it is better suited for fork-based testing.
+
 ### Command-Line Arguments
 
 You can use command-line arguments for automated startup.
